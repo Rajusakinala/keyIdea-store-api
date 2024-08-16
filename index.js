@@ -30,13 +30,13 @@ app.get("/get-excel-data", (req, res) => {
     // totalPages: Math.round(firstSheetData.length / pageLimit),
     limit: pageLimit,
     data: firstSheetData
+      .filter((ele) => {
+        return req.query.gender == ele.prodmeta_section;
+      })
       .slice(
         (req.query.pageNumber - 1) * pageLimit,
         req.query.pageNumber * pageLimit
-      )
-      .filter((ele) => {
-        return req.query.gender == ele.prodmeta_section;
-      }),
+      ),
   });
 });
 
