@@ -34,7 +34,11 @@ app.get("/get-excel-data", (req, res) => {
   res.send({
     pageNumber: req.query.pageNumber,
     limit: pageLimit,
-    totalPages: Math.round(45 / pageLimit),
+    totalPages: Math.round(
+      firstSheetData.filter((ele) => {
+        return req.query.gender == ele.prodmeta_section;
+      }).length / pageLimit
+    ),
     totalmatchedRecords: firstSheetData.filter((ele) => {
       return req.query.gender == ele.prodmeta_section;
     }).length,
