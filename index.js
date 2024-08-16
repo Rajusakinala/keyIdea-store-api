@@ -23,7 +23,7 @@ app.get("/get-excel-data", (req, res) => {
 
   // Send the data as a response
   const totalPages = 8;
-  const pageLimit = 13;
+  const pageLimit = 12;
 
   res.send({
     pageNumber: req.query.pageNumber,
