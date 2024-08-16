@@ -3,11 +3,17 @@ const xlsx = require("xlsx");
 const path = require("path");
 const cors = require("cors");
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
 app.use(cors());
 // Endpoint to get data from two sheets
+app.get("/", (req, res) => {
+  res.send("home page");
+});
+app.get("/test", (req, res) => {
+  res.send("Test");
+});
 app.get("/get-excel-data", (req, res) => {
-  const filePath = path.join(__dirname, "Wedding Products.xlsx"); // Replace with your actual file path
+  const filePath = path.join(__dirname, "Wedding Products.xlsx");
   const workbook = xlsx.readFile(filePath);
 
   // Access the sheets by their names or indexes
@@ -22,13 +28,13 @@ app.get("/get-excel-data", (req, res) => {
   const secondSheetData = xlsx.utils.sheet_to_json(secondSheet);
 
   // Send the data as a response
-  const totalPages = 8;
-  const pageLimit = 12;
+
+  const pageLimit = req.query?.limit ?? 12;
 
   res.send({
     pageNumber: req.query.pageNumber,
-    // totalPages: Math.round(firstSheetData.length / pageLimit),
     limit: pageLimit,
+    totalPages: Math.round(45 / pageLimit),
     totalmatchedRecords: firstSheetData.filter((ele) => {
       return req.query.gender == ele.prodmeta_section;
     }).length,
