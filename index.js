@@ -29,6 +29,9 @@ app.get("/get-excel-data", (req, res) => {
     pageNumber: req.query.pageNumber,
     // totalPages: Math.round(firstSheetData.length / pageLimit),
     limit: pageLimit,
+    totalmatchedRecords: firstSheetData.filter((ele) => {
+      return req.query.gender == ele.prodmeta_section;
+    }).length,
     data: firstSheetData
       .filter((ele) => {
         return req.query.gender == ele.prodmeta_section;
