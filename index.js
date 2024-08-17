@@ -2,9 +2,12 @@ const express = require("express");
 const xlsx = require("xlsx");
 const path = require("path");
 const cors = require("cors");
+// var bodyParser = require("body-parser");
 const app = express();
+app.use(express.json());
 const PORT = 4000;
 app.use(cors());
+// app.use(bodyParser.json());
 // Endpoint to get data from two sheets
 app.get("/", (req, res) => {
   res.send("home page");
@@ -12,7 +15,8 @@ app.get("/", (req, res) => {
 app.get("/test", (req, res) => {
   res.send("Test");
 });
-app.get("/get-excel-data", (req, res) => {
+app.post("/get-excel-data", (req, res) => {
+  console.log("req.body", req.body);
   const filePath = path.join(__dirname, "Wedding Products.xlsx");
   const workbook = xlsx.readFile(filePath);
 
@@ -31,25 +35,23 @@ app.get("/get-excel-data", (req, res) => {
 
   const pageLimit = req.query?.limit ?? 12;
 
+  const result = firstSheetData.filter((ele) => {
+    return (
+      req.query.gender == ele.prodmeta_section &&
+      req.body.price[0] < ele.attr_14k_regular &&
+      ele.attr_14k_regular < req.body.price[1]
+    );
+  });
+
   res.send({
     pageNumber: req.query.pageNumber,
     limit: pageLimit,
-    totalPages: Math.round(
-      firstSheetData.filter((ele) => {
-        return req.query.gender == ele.prodmeta_section;
-      }).length / pageLimit
+    totalPages: Math.round(result.length / pageLimit),
+    totalmatchedRecords: result.length,
+    data: result.slice(
+      (req.query.pageNumber - 1) * pageLimit,
+      req.query.pageNumber * pageLimit
     ),
-    totalmatchedRecords: firstSheetData.filter((ele) => {
-      return req.query.gender == ele.prodmeta_section;
-    }).length,
-    data: firstSheetData
-      .filter((ele) => {
-        return req.query.gender == ele.prodmeta_section;
-      })
-      .slice(
-        (req.query.pageNumber - 1) * pageLimit,
-        req.query.pageNumber * pageLimit
-      ),
   });
 });
 
