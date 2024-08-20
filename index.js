@@ -35,13 +35,22 @@ app.post("/get-excel-data", (req, res) => {
 
   const pageLimit = req.query?.limit ?? 12;
 
-  const result = firstSheetData.filter((ele) => {
+  let result = firstSheetData.filter((ele) => {
     return (
       req.query.gender == ele.prodmeta_section &&
       req.body.price[0] < ele.attr_14k_regular &&
       ele.attr_14k_regular < req.body.price[1]
     );
   });
+  if (req.body.styles.length === 0) {
+  } else {
+    result = result.filter((ele) => {
+      return req.body.styles.some((keyword) =>
+        ele.prod_subcategory.includes(keyword)
+      );
+    });
+    // console.log("styl", styleResultfilter);
+  }
 
   res.send({
     pageNumber: req.query.pageNumber,
